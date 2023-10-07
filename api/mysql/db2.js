@@ -1,6 +1,5 @@
-
 var mysql = require('mysql2');
-var settings = require('./db2_settings.json');
+var settings = require('./db_settings.json');
 var db;
 
 function connectDatabase() {

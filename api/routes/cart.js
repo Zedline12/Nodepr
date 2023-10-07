@@ -1,11 +1,31 @@
 const express=require('express');
 const router=express.Router()
 const db=require('../mysql/db')
+const db2=require('../mysql/db2')
 const cors=require('cors')
 const date=require('date-and-time')
 router.use(cors({
     origin:"*"
 }))
+
+router.get('/:table',(req,res)=>{
+    let sql=`select * from ${req.params.table} `
+    //req.body not json
+    
+    let query=db.query(sql,(err,result)=>{
+        if(err)throw err;
+        var objects=result
+        objects.forEach(element => {
+            db2.query('SET foreign_key_checks = 0')
+           db2.query(`insert into ${req.params.table} set ?`,element,(err,result)=>{
+            if(err) throw err
+            console.log(result.insertId)
+           })
+        });
+        res.send(result)
+    })
+})
+
 router.get('/cart_items/:sessionid',(req,res)=>{
     let sql="select * from cart_item where session_id='"+req.params.sessionid+"'"
     //req.body not json
